@@ -1,3 +1,76 @@
-service : {
-    "greet": (text) -> (text) query;
+type BookRoomPayload = record {
+    number: nat64,
+    price: nat64,
+    stat_date: nat64,
+    end_date: nat64,
+}
+
+type CreateRoomPayload = record {
+    price_per_occupant: nat64,
+    number: nat64,
+    capacity: nat64,
+}
+
+type UpdateRoomPayload = record {
+    number: nat64,
+    new_price_per_occupant: opt nat64,
+    new_capacity: opt nat64,
+}
+
+type DeleteRoomPayload = record {
+    number: nat64,
+}
+
+type OccupantInfo = record {
+    occupant_number: text,
+    stat_date: nat64,
+    end_date: nat64,
+}
+
+type Error = variant {
+    RoomAlreadyExists,
+    RoomAlreadyBooked,
+    RoomNotFound,
+    RoomNotAvailable,
+    NotInRoom,
+    RoomFull,
+    NotOwner,
+    InvalidPrice,
+    InvalidUpdate,
+    ReservationConflict,
+}
+
+type Result = variant {
+    ok,
+    err(Error),
+}
+
+type Result1 = variant {
+    ok,
+    err(Error),
+    room: Room,
+}
+
+type Room = record {
+    number: nat64,
+    price_per_occupant: nat64,
+    capacity: nat64,
+    occupants: map(nat64, OccupantInfo),
+    state: RoomState,
+    owner: text,
+}
+
+type RoomState = variant {
+    Available,
+    Booked,
+}
+
+service: {
+    book_room: (BookRoomPayload) -> (Result),
+    create_room: (CreateRoomPayload) -> (Result),
+    update_room: (UpdateRoomPayload) -> (Result),
+    delete_room: (DeleteRoomPayload) -> (Result),
+    get_room_by_number: (nat64) -> (Result1) query,
+    get_rooms: () -> (list Room) query,
+    unbook_room: (DeleteRoomPayload) -> (Result),
 }
