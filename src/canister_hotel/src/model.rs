@@ -49,7 +49,7 @@ impl Room {
     }
 
     pub fn add_occupant(&mut self, occupant: Occupant) -> Result<(), error::Error> {
-        is self.is_full() {
+        if self.is_full() {
             return Err(error::Error::RoomFull);
         }
 
@@ -67,8 +67,8 @@ impl Room {
         }
     }
 
-    pub fn remove_occupant(&mut, self, occupant:Occupant) -> Result<(), error::Error> {
-        match self.has_occupant(occupant){
+    pub fn remove_occupant(&mut self, occupant: Occupant) -> Result<(), error::Error> {
+        match self.has_occupant(occupant) {
             Some(index) => {
                 self.occupants.remove(index);
                 self.state = if self.occupants.len() == 0 {
@@ -82,7 +82,7 @@ impl Room {
         }
     }
 
-    pub fn update_occupant(&mut, self, new_capacity:Option<u64>, new_price_per_occupant:Option<u64>) -> Result<(), error::Error> {
+    pub fn update_occupant(&mut self, new_capacity: Option<u64>, new_price_per_occupant: Option<u64>) -> Result<(), error::Error> {
         if let Some(capacity) = new_capacity {
             if capacity < self.occupants.len() as u64 {
                 return Err(error::Error::InvalidUpdate);
