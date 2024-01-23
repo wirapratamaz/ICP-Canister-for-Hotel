@@ -94,4 +94,20 @@ impl Room {
         }
         Ok(())
     }
+
+    pub fn price_check(&self, price: u64) -> bool {
+        return price == self.price_per_occupant;
+    }
+
+    pub fn is_full(&self) -> bool {
+        return self.state == RoomState::Full;
+    }
+
+    pub fn has_occupant(&self, occupant: Occupant) -> Option<usize> {
+        self.occupants.iter().position(|o| o.id == occupant.id)
+    }
+
+    pub fn is_owner(&self, occupant: Occupant) -> bool {
+        return self.owner == owner;
+    }    
 }
