@@ -111,3 +111,19 @@ impl Room {
         return self.owner == owner;
     }    
 }
+
+impl ic_stable_structures::Storable for Room {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        borrow::Cow::Owned(Encode!(&self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Result<Self, String> {
+        Decode!(&bytes, Room).map_err(|e| format!("{}", e))
+    }
+}
+
+impl ic_stable_structures::BoundedStorable for Room {
+    const MAX_SIZE: usize = 1000;
+    const IS_FIXED_SIZE: bool = false;
+}
+
