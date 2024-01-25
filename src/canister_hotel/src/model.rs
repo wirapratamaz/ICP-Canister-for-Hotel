@@ -3,6 +3,7 @@ use candid::{Encode, Decode };
 
 use crate::error;
 
+#[derive(candid::CandidType, candid::Deserialize, Clone, PartialEq, Eq, Debug)]
 pub struct Occupant {
     pub id: String,
     pub start_date: u64,
@@ -19,12 +20,14 @@ impl Occupant {
     }
 }
 
+#[derive(candid::CandidType, candid::Deserialize, Clone, PartialEq, Eq, Debug)]
 pub enum RoomState {
     Full,
     PartiallyOccupied,
     TotallyVacant,
 }
 
+#[derive(candid::CandidType, candid::Deserialize, Clone, Debug)]
 pub struct Room {
     pub no: u64,
     pub state: RoomState,
