@@ -130,3 +130,37 @@ impl ic_stable_structures::BoundedStorable for Room {
     const IS_FIXED_SIZE: bool = false;
 }
 
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct GetRoomByNumberPayload {
+    pub number: u64,
+}
+
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct CreateRoomPayload {
+    pub number: u64,
+    pub capacity: u64,
+    pub price_per_occupant: u64,
+}
+
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct BookRomPayload {
+    pub number: u64,
+    pub price : u64,
+}
+
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct UnbookRoomPayload {
+    pub number: u64,
+}
+
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct UpdateRoomPayload {
+    pub number: u64,
+    pub capacity: Option<u64>,
+    pub price_per_occupant: Option<u64>,
+}
+
+#[derive(candid::CandidType, candid::Deserialize)]
+pub struct DeleteRoomPayload {
+    pub number: u64,
+}
