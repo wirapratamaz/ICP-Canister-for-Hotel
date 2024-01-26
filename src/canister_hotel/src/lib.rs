@@ -3,17 +3,22 @@ use std::collections::HashMap;
 use std::cell;
 use std::f32::consts::E;
 
+// Import custom error and model modules that define the application's data structures and error types.
 mod error;
 mod model;
 
+// Define thread-local storage for the memory manager and rooms.
+// This allows each thread to have its own instances of these variables.
 thread_local! {
     static MEMORY_MANAGER: cell::RefCell<memory_manager::MemoryManager<ic_stable_structures::DefaultMemoryImpl>> = cell::RefCell::new(memory_manager::MemoryManager::init(ic_stable_structures::DefaultMemoryImpl::default()));
 
+    // A HashMap to store rooms, using a unique u64 identifier for each room.
     static ROOMS: cell::RefCell<HashMap<u64, model::Room>> = cell::RefCell::new(
         HashMap::new()
     );
 }
 
+// Define a query method to retrieve a room by its ID.
 #[ic_cdk::query]
 fn get_room(room_id: u64) -> model::Room {
     ROOMS.with(|rooms| {
@@ -21,6 +26,7 @@ fn get_room(room_id: u64) -> model::Room {
     })
 }
 
+// Define a query method to retrieve a room by its number.
 #[ic_cdk::query]
 fn get_room_by_number(
     payload: model::GetRoomByNumberPayload,
@@ -34,6 +40,7 @@ fn get_room_by_number(
     })
 }
 
+// Define an update method to create a new room.
 #[ic_cdk::update]
 fn create_room(payload: model::CreateRoomPayload) -> Result<String, error::Error> {
     // Convert the Principal to a String for the id
@@ -65,6 +72,7 @@ fn create_room(payload: model::CreateRoomPayload) -> Result<String, error::Error
     })
 }
 
+// Define an update method to book a room.
 #[ic_cdk::update]
 fn book_room(payload: model::BookRoomPayload) -> Result<String, error::Error> {
     // Convert the Principal to a String for the id
@@ -101,6 +109,7 @@ fn book_room(payload: model::BookRoomPayload) -> Result<String, error::Error> {
     })
 }
 
+// Define an update method to unbook a room.
 #[ic_cdk::update]
 fn unbook_room(payload: model::UnbookRoomPayload) -> Result<String, error::Error> {
     // Convert the Principal to a String for the id
@@ -132,6 +141,7 @@ fn unbook_room(payload: model::UnbookRoomPayload) -> Result<String, error::Error
     })
 }
 
+// Define an update method to delete a room.
 #[ic_cdk::update]
 fn delete_room(payload: model::DeleteRoomPayload) -> Result<(), error::Error> {
     ROOMS.with(|r| {
