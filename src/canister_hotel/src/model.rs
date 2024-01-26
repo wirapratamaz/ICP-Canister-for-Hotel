@@ -1,5 +1,5 @@
 use std::borrow;
-use candid::{Encode, Decode };
+use candid::{Encode, Decode};
 
 use crate::error;
 
@@ -13,7 +13,7 @@ pub struct Occupant {
 impl Occupant {
     pub fn new(id: String, start_date: u64, end_date: u64) -> Self {
         Self {
-            id: id.to_string(),
+            id,
             start_date,
             end_date,
         }
@@ -34,20 +34,18 @@ pub struct Room {
     pub occupants: Vec<Occupant>,
     pub price_per_occupant: u64,
     pub capacity: u64,
-    pub owner: Occupant
+    pub owner: Occupant,
 }
 
 impl Room {
-    pub fn new(number: u64, capacity: u64, price_per_occupant: u64, owner: Occupant) -> Self {
+    pub fn new(no: u64, capacity: u64, price_per_occupant: u64, owner: Occupant) -> Self {
         Self {
-            Room {
-                no: number,
-                state: RoomState::TotallyVacant,
-                occupants: Vec::new(),
-                price_per_occupant,
-                capacity,
-                owner
-            }
+            no,
+            state: RoomState::TotallyVacant,
+            occupants: Vec::new(),
+            price_per_occupant,
+            capacity,
+            owner,
         }
     }
 
@@ -56,8 +54,8 @@ impl Room {
             return Err(error::Error::RoomFull);
         }
 
-        match self.has_occupant(occupant.clone()) {
-            Some(_)=> Err(error::Error::RoomAlreadyBooked),
+        match self.has_occupant(&occupant) {
+            Some(_) => Err(error::Error::RoomAlreadyBooked),
             None => {
                 self.occupants.push(occupant);
                 self.state = if self.occupants.len() == self.capacity as usize {
@@ -70,11 +68,11 @@ impl Room {
         }
     }
 
-    pub fn remove_occupant(&mut self, occupant: Occupant) -> Result<(), error::Error> {
+    pub fn remove_occupant(&mut self, occupant: &Occupant) -> Result<(), error::Error> {
         match self.has_occupant(occupant) {
             Some(index) => {
                 self.occupants.remove(index);
-                self.state = if self.occupants.len() == 0 {
+                self.state = if self.occupants.is_empty() {
                     RoomState::TotallyVacant
                 } else {
                     RoomState::PartiallyOccupied
@@ -99,20 +97,20 @@ impl Room {
     }
 
     pub fn price_check(&self, price: u64) -> bool {
-        return price == self.price_per_occupant;
+        price == self.price_per_occupant
     }
 
     pub fn is_full(&self) -> bool {
-        return self.state == RoomState::Full;
+        self.state == RoomState::Full
     }
 
-    pub fn has_occupant(&self, occupant: Occupant) -> Option<usize> {
+    pub fn has_occupant(&self, occupant: &Occupant) -> Option<usize> {
         self.occupants.iter().position(|o| o.id == occupant.id)
     }
 
-    pub fn is_owner(&self, occupant: Occupant) -> bool {
-        return self.owner == owner;
-    }    
+    pub fn is_owner(&self, occupant: &Occupant) -> bool {
+        self.owner == *occupant
+    }
 }
 
 impl ic_stable_structures::Storable for Room {
@@ -120,13 +118,13 @@ impl ic_stable_structures::Storable for Room {
         borrow::Cow::Owned(Encode!(&self).unwrap())
     }
 
-    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Result<Self, String> {
-        Decode!(&bytes, Room).map_err(|e| format!("{}", e))
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Room {
+        Decode!(&bytes, Room).unwrap()
     }
 }
 
 impl ic_stable_structures::BoundedStorable for Room {
-    const MAX_SIZE: usize = 1000;
+    const MAX_SIZE: u32 = 1000;
     const IS_FIXED_SIZE: bool = false;
 }
 
@@ -143,9 +141,9 @@ pub struct CreateRoomPayload {
 }
 
 #[derive(candid::CandidType, candid::Deserialize)]
-pub struct BookRomPayload {
+pub struct BookRoomPayload {
     pub number: u64,
-    pub price : u64,
+    pub price: u64,
 }
 
 #[derive(candid::CandidType, candid::Deserialize)]

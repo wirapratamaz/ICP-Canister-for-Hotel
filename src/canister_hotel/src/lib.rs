@@ -1,4 +1,6 @@
-#[ic_cdk::query]
-fn greet(name: String) -> String {
-    format!("Hello Bali Hotel, {}!", name)
-}
+use ic_stable_structures::memory_manager;
+use std::collections::HashMap;
+use std::cell;
+
+mod error;
+mod model;
