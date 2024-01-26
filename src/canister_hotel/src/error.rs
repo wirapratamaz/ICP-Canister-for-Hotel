@@ -4,4 +4,8 @@ pub enum Error {
     RoomAlreadyBooked,
     RoomNotBooked,
     InvalidUpdate,
+    RoomNotFound,
+    RoomAlreadyExists,
+    InvalidPrice,
+    NotInRoom,
 }
